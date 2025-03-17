@@ -1,6 +1,6 @@
 // src/components/BoardCreate.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button, Card, Form } from 'react-bootstrap';
 import { postCreateBoard } from '../api/boardApi';
 
@@ -22,7 +22,7 @@ const BoardCreate: React.FC = () => {
   };
 
   return (
-    <Card className="mt-5">
+    <Card className="mt-5 mb-5 mx-auto" style={{ maxWidth: '600px' }}>
       <Card.Body>
         <Card.Title>게시글 생성</Card.Title>
         <Form onSubmit={handleSubmit}>
@@ -70,6 +70,9 @@ const BoardCreate: React.FC = () => {
           <Button variant="primary" type="submit">
             생성
           </Button>
+          <Link to="/boards">
+            <Button variant="secondary">목록</Button>
+          </Link>
         </Form>
       </Card.Body>
     </Card>

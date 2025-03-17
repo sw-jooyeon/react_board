@@ -9,7 +9,6 @@ import BoardEdit from './components/BoardEdit';
 // import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 const App: React.FC = () => {
   return (
     <Router>

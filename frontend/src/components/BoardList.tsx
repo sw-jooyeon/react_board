@@ -45,31 +45,35 @@ const BoardList: React.FC = () => {
   };
 
   return (
-    <div className="mt-5">
+    <div className="mt-5 mb-5 mx-auto" style={{ maxWidth: '600px' }}>
       <h2 className="mb-3">게시판 목록</h2>
-      <div className="mb-3">
+      <div className="mb-3 d-flex justify-content-end">
         <Link to="/boards/create">
           <Button variant="success">게시글 등록</Button>
         </Link>
       </div>
-      <ListGroup>
-        {boards.map(board => (
-          <ListGroup.Item key={board.id}>
-            <Link to={`/boards/${board.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Row>
-                <Col>
-                  <strong>{board.title}</strong>
-                  <br />
-                  <small>{board.writer}</small>
-                </Col>
-                <Col xs="auto">
-                  <small>{new Date(board.createdAt).toLocaleString()}</small>
-                </Col>
-              </Row>
-            </Link>
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
+      <div className="mx-auto" style={{ maxWidth: '600px'}}>
+        <ListGroup>
+            {boards.map(board => (
+            <ListGroup.Item key={board.id}>
+                <Link to={`/boards/${board.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Row>
+                    <Col>
+                    <div className="text-truncate" style={{ maxWidth: '350px' }}>
+                        <strong>{board.title}</strong>
+                    </div>
+                    {/* <br /> */}
+                    <small>{board.writer}</small>
+                    </Col>
+                    <Col xs="auto">
+                    <small>{new Date(board.createdAt).toLocaleString()}</small>
+                    </Col>
+                </Row>
+                </Link>
+            </ListGroup.Item>
+            ))}
+        </ListGroup>
+      </div>
       <Pagination className="mt-3 justify-content-center">
         <Pagination.Prev
           disabled={currentPage === 0}

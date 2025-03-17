@@ -37,7 +37,7 @@ const BoardEdit: React.FC = () => {
   };
 
   return (
-    <Card className="mt-5">
+    <Card className="mt-5 mb-5 mx-auto" style={{ maxWidth: '600px' }}>
       <Card.Body>
         <Card.Title>게시글 수정</Card.Title>
         <Form onSubmit={handleSubmit}>

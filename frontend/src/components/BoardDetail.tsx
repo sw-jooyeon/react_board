@@ -1,7 +1,7 @@
 // src/components/BoardDetail.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Button, Form, Card } from 'react-bootstrap';
+import { Button, Card, Form } from 'react-bootstrap';
 import { fetchBoardDetail, postVerifyPassword, postDeleteBoard, BoardDetail as BoardDetailType } from '../api/boardApi';
 
 const BoardDetail: React.FC = () => {
@@ -52,18 +52,21 @@ const BoardDetail: React.FC = () => {
   }
 
   return (
-    <Card className="mt-5">
+    <Card className="mt-5 mb-5 mx-auto" style={{ maxWidth: '600px' }}>
       <Card.Body>
-        <Card.Title>{board.title}</Card.Title>
-        <Card.Subtitle className="mb-2 text-muted">
-          작성자: {board.writer} | 작성일: {new Date(board.createdAt).toLocaleString()}
+        {/* 제목을 크게 강조 */}
+        <Card.Title style={{ fontSize: '2rem', fontWeight: 'bold' }} className="mb-3">
+          {board.title}
+        </Card.Title>
+        <Card.Subtitle className="mb-3 text-muted">
+          작성자: {board.writer} |{" "}
+          {board.updatedAt
+            ? `수정일: ${new Date(board.updatedAt).toLocaleString()}`
+            : `작성일: ${new Date(board.createdAt).toLocaleString()}`}
         </Card.Subtitle>
-        {board.updatedAt && (
-          <Card.Subtitle className="mb-2 text-muted">
-            수정일: {new Date(board.updatedAt).toLocaleString()}
-          </Card.Subtitle>
-        )}
-        <Card.Text>{board.content}</Card.Text>
+        {/* 제목/작성자와 본문 사이 구분선 추가 */}
+        <hr />
+        <Card.Text className="mt-3" style={{ whiteSpace: 'pre-line' }}>{board.content}</Card.Text>
         <Form.Group className="mb-3" controlId="formBoardPassword">
           <Form.Control
             type="password"
