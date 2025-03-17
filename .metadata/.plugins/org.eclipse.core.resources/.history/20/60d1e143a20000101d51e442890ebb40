@@ -1,0 +1,5 @@
+package com.board.demo.entity;
+
+public class Board {
+
+}
