@@ -1,8 +1,8 @@
-// src/components/BoardList.tsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, ListGroup, Row, Col, Pagination } from 'react-bootstrap';
 import { fetchBoardList, BoardSummary } from '../api/boardApi';
+import '../App.css';
 
 const BoardList: React.FC = () => {
   const [boards, setBoards] = useState<BoardSummary[]>([]);
@@ -27,10 +27,13 @@ const BoardList: React.FC = () => {
     setCurrentPage(page);
   };
 
-  // 페이지번호가 너무 많으면 일부만 보여주는 로직을 추가할 수 있지만, 여기서는 모든 페이지 번호를 표시합니다.
   const renderPaginationItems = () => {
     const items = [];
-    for (let number = 0; number < totalPages; number++) {
+    const visiblePageCount = 5;
+    const startPage = Math.floor(currentPage / visiblePageCount) * visiblePageCount;
+    const endPage = Math.min(startPage + visiblePageCount, totalPages);
+
+    for (let number = startPage; number < endPage; number++) {
       items.push(
         <Pagination.Item
           key={number}
@@ -46,10 +49,10 @@ const BoardList: React.FC = () => {
 
   return (
     <div className="mt-5 mb-5 mx-auto" style={{ maxWidth: '600px' }}>
-      <h2 className="mb-3">게시판 목록</h2>
+      <h2 className="mb-3 text-center">게시판</h2>
       <div className="mb-3 d-flex justify-content-end">
         <Link to="/boards/create">
-          <Button variant="success">게시글 등록</Button>
+          <Button className="btn-custom" variant="success">게시글 등록</Button>
         </Link>
       </div>
       <div className="mx-auto" style={{ maxWidth: '600px'}}>

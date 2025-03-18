@@ -1,24 +1,36 @@
 package com.example.board.service;
 
+import com.example.board.dto.*;
 import com.example.board.entity.Board;
 import com.example.board.repository.BoardRepository;
-import com.example.board.dto.BoardSummaryDto;
-import com.example.board.dto.BoardDetailDto;
-import com.example.board.dto.BoardCreateRequest;
-import com.example.board.dto.BoardUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.*;
 
 @Service
 public class BoardService {
-    
+
     @Autowired
     private BoardRepository boardRepository;
-    
-    // 게시글 목록 (페이지당 20개)
+
+    private final Path fileStorageLocation;
+
+    public BoardService() {
+        this.fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(this.fileStorageLocation);
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not create upload directory", ex);
+        }
+    }
+
+    // 게시글 목록
     public Page<BoardSummaryDto> getBoards(int page) {
-        Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, 7, Sort.by("createdAt").descending());
         Page<Board> boards = boardRepository.findAll(pageable);
         return boards.map(board -> new BoardSummaryDto(
                 board.getId(),
@@ -27,7 +39,7 @@ public class BoardService {
                 board.getCreatedAt()
         ));
     }
-    
+
     // 게시글 상세 조회
     public BoardDetailDto getBoardDetail(Long id) {
         Board board = boardRepository.findById(id)
@@ -38,10 +50,11 @@ public class BoardService {
                 board.getContent(),
                 board.getWriter(),
                 board.getCreatedAt(),
-                board.getUpdatedAt()
+                board.getUpdatedAt(),
+                board.getFilePath()
         );
     }
-    
+
     // 게시글 생성
     public BoardDetailDto createBoard(BoardCreateRequest request) {
         Board board = new Board();
@@ -51,16 +64,17 @@ public class BoardService {
         board.setPassword(request.getPassword());
         Board saved = boardRepository.save(board);
         return new BoardDetailDto(
-                saved.getId(),
-                saved.getTitle(),
-                saved.getContent(),
-                saved.getWriter(),
-                saved.getCreatedAt(),
-                saved.getUpdatedAt()
+                board.getId(),
+                board.getTitle(),
+                board.getContent(),
+                board.getWriter(),
+                board.getCreatedAt(),
+                board.getUpdatedAt(),
+                board.getFilePath()
         );
     }
-    
-    // 게시글 수정 (패스워드 검증 후 제목과 본문 수정 – 작성자, 패스워드는 변경 불가)
+
+    // 게시글 수정
     public BoardDetailDto updateBoard(Long id, BoardUpdateRequest request) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Board not found"));
@@ -71,16 +85,17 @@ public class BoardService {
         board.setContent(request.getContent());
         Board updated = boardRepository.save(board);
         return new BoardDetailDto(
-                updated.getId(),
-                updated.getTitle(),
-                updated.getContent(),
-                updated.getWriter(),
-                updated.getCreatedAt(),
-                updated.getUpdatedAt()
+                board.getId(),
+                board.getTitle(),
+                board.getContent(),
+                board.getWriter(),
+                board.getCreatedAt(),
+                board.getUpdatedAt(),
+                board.getFilePath()
         );
     }
-    
-    // 게시글 삭제 (패스워드 검증)
+
+    // 게시글 삭제
     public void deleteBoard(Long id, String password) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Board not found"));
@@ -89,13 +104,34 @@ public class BoardService {
         }
         boardRepository.delete(board);
     }
-    
-    // 패스워드 검증 (수정/삭제 전 별도 검증)
+
+    // 패스워드 검증
     public void verifyPassword(Long id, String password) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         if (!board.getPassword().equals(password)) {
             throw new RuntimeException("Password mismatch");
         }
+    }
+
+    // 파일 저장
+    public String storeFile(MultipartFile file) {
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        try {
+            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return fileName;
+        } catch (IOException ex) {
+            throw new RuntimeException("File storage failed", ex);
+        }
+    }
+
+    // 파일 업로드
+    public void uploadFile(Long boardId, MultipartFile file) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+        String fileName = storeFile(file);
+        board.setFilePath(fileName);
+        boardRepository.save(board);
     }
 }

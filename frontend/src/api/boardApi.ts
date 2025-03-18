@@ -12,6 +12,7 @@ export interface BoardDetail {
   writer: string;
   createdAt: string;
   updatedAt: string | null;
+  filePath?: string;
 }
 
 export interface BoardCreateRequest {
@@ -88,5 +89,17 @@ export const postDeleteBoard = async (id: number, password: string): Promise<voi
   });
   if (!response.ok) {
     throw new Error("Failed to delete board");
+  }
+};
+
+export const postUploadFile = async (boardId: number, file: File): Promise<void> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await fetch(`${API_BASE}/${boardId}/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!response.ok) {
+    throw new Error("File upload failed");
   }
 };

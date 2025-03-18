@@ -9,7 +9,6 @@ public class PasswordRequest {
         this.password = password;
     }
     
-    // Getter and Setter
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 }

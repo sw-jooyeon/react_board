@@ -13,7 +13,6 @@ public class BoardUpdateRequest {
         this.password = password;
     }
     
-    // Getters and Setters
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     

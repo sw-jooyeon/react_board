@@ -22,6 +22,10 @@ public class Board {
     @Column(nullable = false, length = 20)
     private String writer;
     
+    // 첨부 파일 경로 저장 필드
+    @Column(name = "file_path", length = 255)
+    private String filePath;
+    
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
@@ -38,7 +42,6 @@ public class Board {
         updatedAt = LocalDateTime.now();
     }
     
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
@@ -53,6 +56,9 @@ public class Board {
     
     public String getWriter() { return writer; }
     public void setWriter(String writer) { this.writer = writer; }
+    
+    public String getFilePath() { return filePath; }
+    public void setFilePath(String filePath) { this.filePath = filePath; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
